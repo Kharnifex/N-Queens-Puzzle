@@ -1,6 +1,3 @@
-#p3190044, IOANNIS GKIONIS || p310104, PANAGIOTIS LAMPROPOULOS, TEXNHTH NOHMOSUNH 2021-22
-#h askhsh ulopoieitai me genetiko algorithmo
-
 from funcs import *
 import time
 
