@@ -10,8 +10,8 @@ def main():
     except ValueError:
         print("Number of queens has to be an integer")
         return
-    #an queens<4 tote den uparxei lush kai trexei infinitely, exw valei san panw orio to 20
-    if (int(nq)<4 or int(nq)>20):
+    #an queens<=4 tote den uparxei lush kai trexei infinitely, exw valei san panw orio to 20
+    if (int(nq)<=4 or int(nq)>20):
         print("Number of queens has to be an integer ranging from 4 to 19")
         return
     nqueens=int(nq)
