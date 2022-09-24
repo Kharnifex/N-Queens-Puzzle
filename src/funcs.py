@@ -3,7 +3,7 @@ from scipy import special
 import itertools
 
 def generate_population(nqueens, popsize):
-    #sunarthsh pou kanei initialize mia lista me pithanes theseis twn queens
+    #function that initializes a list with possible positions for the queens
     population=[]
     for individual in range(popsize):
         new=[random.randrange(nqueens) for index in range(nqueens)]
@@ -11,7 +11,7 @@ def generate_population(nqueens, popsize):
     return population
 
 def print_check_goal(population, nqueens):
-    #sunarthsh pou typwnei to score gia kathe genia kai tsekarei an exei vrethei lush sto problhma
+    #function that prints each generation's score and checks whether the problem has been solved
     for ind in population:
         score = fitness_score(ind, nqueens)
         print(str(ind) +  "Fitness score: " + str(score))
@@ -22,7 +22,7 @@ def print_check_goal(population, nqueens):
     return False
 
 def fitness_score(seq, nqueens):
-    #aplh sunarthsh upologismou fitness score
+    #simple function that calculates fitness score
     score=0
     for row in range(nqueens):
         col=seq[row]
@@ -35,13 +35,13 @@ def fitness_score(seq, nqueens):
                 continue
             if other_row - seq[other_row] == row - col:
                 continue
-            #score+=1 an ena zeugari queens den apeilei h mia thn allh
+            #score+=1 if two queens dont threaten one another
             score+=1
-    #score/2 dioti to kathe zeugari elegxetai 2 fores apo thn sunarthsh
+    #score/2 because each pair of queens appears twice
     return score/2
 
 def selection(population, nqueens):
-    #sunarthsh epiloghs gonewn gia evolution mesw xrhshs pithanothtwn
+    #function that selects parents using probabilities
     parents = []
     for ind in population:
         if random.randrange(special.comb(nqueens, 2)*2) < fitness_score(ind, nqueens):
@@ -49,45 +49,45 @@ def selection(population, nqueens):
     return parents
 
 def crossover(parents, nqueens, mixingnum):
-    #dialegoume random index
+    #random index is chosen
     crosspoints = random.sample(range(nqueens), mixingnum - 1)
     offsprings = []
-    #xrhsimopoioume thn permutations me deutero orisma mixingnum=2 gia na paroume tous random sunduasmous 2 stoixiwn tou parents
+    #we use permutations with 2 as its 2nd argument so we get random combinations of 2 of parents' elements
     permutationslist = list(itertools.permutations(parents, mixingnum))
     for perm in permutationslist:
         offspring = []
-        start_pt = 0 #kanoume initialize ton index "pointer"
-        for parent_idx, cross_point in enumerate(crosspoints): #den trexei gia ton teleutaio gonea
+        start_pt = 0 #initialize index "pointer"
+        for parent_idx, cross_point in enumerate(crosspoints): #does not run for last parent
             parent_part = perm[parent_idx][start_pt:cross_point]
-            #gia kathe parent vazoume ola ta offspring tou sth lista offspring
+            #for each parent, their offspring is added to the offspring list
             offspring.append(parent_part)
             start_pt = cross_point
-        #kanoume sthn ousia to idio pou ginetai sto for loop gia ton teleutaio gonea
+        #we basically do the same that's in the for loop but for the last parent
         last_parent = perm[-1]
         parent_part = last_parent[cross_point:]
         offspring.append(parent_part)
-        #gia kathe perm vazoume ola ta offspring sth lista offsprings
+        #we add all offsprings to the offspring list for each perm
         offsprings.append(list(itertools.chain(*offspring)))
     return offsprings
 
 def mutate(seq, nqueens, mutaterate):
-    #sunarthsh gia metallakseis, to random.random() epistrefei timh apo 0 mexri 1 ara an to mutaterate einai panw apo 1 tha ginontai panta metallakseis kai katw apo 0 den tha ginontai pote
+    #mutation function, random.random() returns value from 0 to 1 so if mutaterate>1 then mutations always happen and if mutaterate<0 they never happeb
     for row in range(len(seq)):
         if random.random() < mutaterate:
             seq[row] = random.randrange(nqueens)
     return seq
 
 def evolution(population, nqueens, popsize):
-    #xrhsimopoioume thn selection gia na epileksoume goneis
+    #we use selection() to choose parents
     parents = selection(population, nqueens)
-    #xrhsimopoioume thn crossover anamesa stous 2 goneis gia na vroume ta paidia tous
+    #we use crossover() to find children
     offsprings = crossover(parents, nqueens, 2)
-    #xrhsimopoioume thn mutate me mutate rate to 0.1 (mporoume na to allaksoume) gia na dwsoume thn pithanotita na ginoun metallakseis
+    #we use mutate() with mutaterate=0.1 (can change) to give this generation a chance of mutating
     offsprings = [mutate(x, nqueens, 0.1) for x in offsprings]
-    #vazoume thn prohgoumenh kai epomenh genia sto new_gen gia na krathsoume ta atoma me to megalutero fitness_score
+    #we put the previous and next generation to new_gen so we can keep the individiuals with the highest fitness_score
     new_gen = offsprings
     for ind in population:
         new_gen.append(ind)
-    #vriskoume kai gurname sorted lista twn n=popsize stoixiwn tou new_gen me descending order (reverse) tou fitness score, dhladh auta pou exoun pio megalo fitness score tha einai prwta
+    #a sorted, n=popsize sized list that uses descending order of fitness score is returned
     new_gen = sorted(new_gen, key=lambda ind: fitness_score(ind, nqueens), reverse=True)[:popsize]
     return new_gen
