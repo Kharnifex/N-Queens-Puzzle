@@ -10,12 +10,12 @@ def main():
     except ValueError:
         print("Number of queens has to be an integer")
         return
-    #an queens<4 tote den uparxei lush kai trexei infinitely, exw valei san panw orio to 20
+    #if queens<4 then there is no solution and it'd end up running indefinitely, i've personally set upper limit as 20, can be changed
     if (int(nq)<4 or int(nq)>20):
         print("Number of queens has to be an integer ranging from 4 to 19")
         return
     nqueens=int(nq)
-    #kyrio programma
+    #main program
     print("Generation:0")
     population = generate_population(nqueens, popsize)
     generation = 1
